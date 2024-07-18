@@ -1,0 +1,3 @@
+- [X] Database table for coffee shops setup
+- [X] Setup the link between database and UI
+- [] Setup user auth 
