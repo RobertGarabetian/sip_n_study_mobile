@@ -46,20 +46,30 @@ class _HomePageState extends State<HomePage> {
             return const Center(child: CircularProgressIndicator());
           }
           final coffee_shops = snapshot.data!;
-          return ListView.builder(
+          return ListView.separated(
             itemCount: coffee_shops.length,
-            itemBuilder: ((context, index) {
+            itemBuilder: ((BuildContext context, int index) {
               final coffee_shop = coffee_shops[index];
               return ListTile(
                 title: Text(
-                  coffee_shop['name'] + "${coffee_shop['sip_score']}",
+                  coffee_shop['name'],
                   style: TextStyle(
                     color: Colors.blue, // Change the text color here
                     fontSize: 24, // Optional: Change the font size
                   ),
                 ),
+                tileColor: Colors.white,
+                trailing: Text(
+                  "${coffee_shop['sip_score']}",
+                  style: TextStyle(
+                    color: Colors.purple[300],
+                    fontSize: 18,
+                  ),
+                ),
               );
             }),
+            separatorBuilder: (BuildContext context, int index) =>
+                Divider(color: Colors.amber[400]),
           );
         },
       ),
