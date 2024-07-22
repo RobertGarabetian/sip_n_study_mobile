@@ -1,17 +1,13 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'pages/another_page.dart';
+import 'pages/profile_page.dart';
+import 'pages/home_page.dart';
+import 'services/supabase_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await dotenv.load(fileName: ".env");
-
-  await Supabase.initialize(
-    url: 'https://dacwjwehhdquvsmwfffl.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhY3dqd2VoaGRxdXZzbXdmZmZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU0ODkwNzIsImV4cCI6MjAzMTA2NTA3Mn0.OH2sPgLxtdaUg196tDNAw2AJwUMn_JvdBUF7gayqxlg',
-  );
-  runApp(MyApp());
+  await SupabaseService.initialize();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -21,57 +17,54 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'Coffee Shops',
-      home: HomePage(),
+      home: MainPage(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  final _future = Supabase.instance.client.from('coffee_shops').select();
+class _MainPageState extends State<MainPage> {
+  int _selectedIndex = 0;
+  final List<Widget> _pages = [
+    const HomePage(),
+    const AnotherPage(), // Add your other pages here
+    const ProfilePage(), // Add your settings page or any other page
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: _future,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final coffee_shops = snapshot.data!;
-          return ListView.separated(
-            itemCount: coffee_shops.length,
-            itemBuilder: ((BuildContext context, int index) {
-              final coffee_shop = coffee_shops[index];
-              return ListTile(
-                title: Text(
-                  coffee_shop['name'],
-                  style: TextStyle(
-                    color: Colors.blue, // Change the text color here
-                    fontSize: 24, // Optional: Change the font size
-                  ),
-                ),
-                tileColor: Colors.white,
-                trailing: Text(
-                  "${coffee_shop['sip_score']}",
-                  style: TextStyle(
-                    color: Colors.purple[300],
-                    fontSize: 18,
-                  ),
-                ),
-              );
-            }),
-            separatorBuilder: (BuildContext context, int index) =>
-                Divider(color: Colors.amber[400]),
-          );
-        },
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_view_week_sharp),
+            label: '',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.green[800],
+        onTap: _onItemTapped,
       ),
     );
   }
