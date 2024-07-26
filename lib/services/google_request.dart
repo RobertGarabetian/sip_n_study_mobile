@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-var key = 'AIzaSyAwCZAjDZMPglia64gsXAB6JQyOqUhu4JM';
+// var key = 'AIzaSyAwCZAjDZMPglia64gsXAB6JQyOqUhu4JM';
 var name = 'La La Land Kind Cafe';
 Future<http.Response?> fetchAlbum(shopName) async {
   try {
