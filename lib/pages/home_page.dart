@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/supabase_service.dart';
+import '../services/google_request.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -51,21 +53,23 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   tileColor: Colors.white,
-                  trailing: IconButton(
-                    icon: Icon(Icons.menu),
-                    onPressed: () {
-                      // Handle button press
-                      print('ElevatedButton Pressed');
+                  trailing: FutureBuilder<http.Response?>(
+                    future: fetchAlbum(coffee_shop['name']),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError ||
+                          !snapshot.hasData ||
+                          snapshot.data == null) {
+                        return Text('Failed to load image');
+                      } else {
+                        final imageBytes = snapshot.data!.bodyBytes;
+                        return Image.memory(imageBytes);
+                      }
                     },
-                    style: ElevatedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      textStyle:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
                   ),
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(color: Colors.grey, width: 1),
